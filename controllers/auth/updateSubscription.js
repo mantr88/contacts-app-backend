@@ -1,4 +1,4 @@
-const User = require("../../models/users/index");
+const { User } = require("../../models/users/index");
 
 const updateSubscription = async (req, res, next) => {
   console.log(req.body);

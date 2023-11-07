@@ -4,7 +4,7 @@ const { randomUUID } = require("crypto");
 require("dotenv").config();
 const { sendEmail } = require("../../helpers/index");
 
-const User = require("../../models/users/index");
+const { User } = require("../../models/users/index");
 
 const BASE_URL = process.env.BASE_URL;
 

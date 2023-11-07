@@ -1,4 +1,4 @@
-const User = require("../../models/users/index");
+const { User } = require("../../models/users/index");
 
 const logout = async (req, res, next) => {
   try {

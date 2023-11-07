@@ -1,6 +1,6 @@
 const path = require("path");
 const Jimp = require("jimp");
-const User = require("../../models/users/index");
+const { User } = require("../../models/users/index");
 
 const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
 

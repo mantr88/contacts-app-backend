@@ -1,4 +1,4 @@
-const User = require("../../models/users/index");
+const { User } = require("../../models/users/index");
 
 const verifyEmail = async (req, res) => {
   const { verificationCode } = req.params;
