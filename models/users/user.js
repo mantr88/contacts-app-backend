@@ -21,7 +21,7 @@ const userShema = Schema(
       required: true,
     },
     token: String,
-    verify: {
+    isVerify: {
       type: Boolean,
       default: false,
     },

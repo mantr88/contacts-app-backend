@@ -2,11 +2,11 @@ const bcrypt = require("bcrypt");
 const gravatar = require("gravatar");
 const { randomUUID } = require("crypto");
 require("dotenv").config();
-const { sendEmail } = require("../../helpers/index");
+const { sendEmail, saveToken, generateTokens } = require("../../helpers/index");
 
 const { User } = require("../../models/users/index");
 
-const BASE_URL = process.env.BASE_URL;
+// const BASE_URL = process.env.BASE_URL;
 
 const register = async (req, res, next) => {
   try {
@@ -27,18 +27,23 @@ const register = async (req, res, next) => {
       verificationToken,
     });
 
-    const verifyEmail = {
-      to: "padre12@gmail.com",
-      subject: "Verify email",
-      html: `<a target="_blanc" href="${BASE_URL}/api/users/verify/${verificationToken}" >Click verify email</a>`,
-      text: "Verify your Email",
+    await sendEmail(email, verificationToken);
+
+    const userDTO = {
+      id: newUser._id,
+      email: newUser.email,
+      isVerify: newUser.isVerify,
     };
+    const tokens = generateTokens({ ...userDTO });
+    await saveToken(userDTO.id, tokens.refreshToken);
 
-    await sendEmail(verifyEmail);
-
+    res.cookie("refreshToken", tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
     return res
       .status(201)
-      .json({ email: newUser.email, subscription: "starter" });
+      .json({ user: userDTO, subscription: "starter", ...tokens });
   } catch (error) {
     next(error);
   }
