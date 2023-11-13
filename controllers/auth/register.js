@@ -6,8 +6,6 @@ const { sendEmail, saveToken, generateTokens } = require("../../helpers/index");
 
 const { User } = require("../../models/users/index");
 
-// const BASE_URL = process.env.BASE_URL;
-
 const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -27,7 +25,10 @@ const register = async (req, res, next) => {
       verificationToken,
     });
 
-    await sendEmail(email, verificationToken);
+    await sendEmail(
+      email,
+      `${process.env.BASE_URL}/api/users/verify/${verificationToken}`
+    );
 
     const userDTO = {
       id: newUser._id,

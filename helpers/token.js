@@ -17,7 +17,7 @@ const saveToken = async (userId, refreshToken) => {
     tokenData.refreshToken = refreshToken;
     return tokenData.save();
   }
-  console.log({ user: userId, token: refreshToken });
+
   const token = await Token.create({ user: userId, token: refreshToken });
   return token;
 };
