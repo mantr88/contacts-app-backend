@@ -1,9 +1,7 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const { User } = require("../../models/users/index");
-
-const SECRET_KEY = process.env.SECRET_KEY;
+const { saveToken, generateTokens } = require("../../helpers/index");
 
 const login = async (req, res, next) => {
   try {
@@ -14,7 +12,7 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: "Email or password is wrong" });
     }
 
-    if (!user.verify) {
+    if (!user.isVerify) {
       return res.status(401).json({ message: "Email not verified" });
     }
 
@@ -23,18 +21,22 @@ const login = async (req, res, next) => {
     if (!passwordCompare) {
       return res.status(401).json({ message: "Email or password is wrong" });
     }
-    const payload = { id: user._id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
 
-    await User.findByIdAndUpdate(user._id, { token });
+    const userDTO = {
+      id: user._id,
+      email: user.email,
+      isVerify: user.isVerify,
+    };
 
-    res.status(200).json({
-      token,
-      user: {
-        email: user.email,
-        subscription: "starter",
-      },
+    const tokens = generateTokens({ ...userDTO });
+    await saveToken(userDTO.id, tokens.refreshToken);
+
+    res.cookie("refreshToken", tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
     });
+
+    res.status(200).json({ user: userDTO, subscription: "starter", ...tokens });
   } catch (error) {
     next(error);
   }
