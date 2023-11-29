@@ -14,8 +14,8 @@ const generateTokens = (payload) => {
 const saveToken = async (userId, refreshToken) => {
   const tokenData = await Token.findOne({ user: userId });
   if (tokenData) {
-    tokenData.refreshToken = refreshToken;
-    return tokenData.save();
+    tokenData.token = refreshToken;
+    return await tokenData.save();
   }
 
   const token = await Token.create({ user: userId, token: refreshToken });
